@@ -15,11 +15,8 @@ const screenHeight = 720;
 var enemy: Enemy = undefined;
 
 pub fn StartGame() !void {
-    enemy.position.x = screenWidth / 2;
-    enemy.position.y = screenHeight / 2;
-
-    enemy.size.x = 10;
-    enemy.size.y = 10;
+    enemy.position = Vector2.init(screenWidth / 2, screenHeight / 2);
+    enemy.size = Vector2.init(15, 15);
 }
 
 pub fn main() !void {
