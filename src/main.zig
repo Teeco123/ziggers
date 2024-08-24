@@ -4,6 +4,11 @@ const rl = @import("raylib");
 const Vector2 = rl.Vector2;
 const math = std.math;
 
+const Game = struct {
+    frame: u32,
+    second: u32,
+};
+
 const Map = struct {
     positions: u8,
     cords: [10]Vector2,
@@ -20,12 +25,16 @@ const Enemy = struct {
 const screenWidth = 1280;
 const screenHeight = 720;
 
+var game: Game = undefined;
 var map: Map = undefined;
 var enemy: Enemy = undefined;
 
 pub fn StartGame() !void {
     rl.initWindow(screenWidth, screenHeight, "Ziggers");
     rl.setTargetFPS(60);
+
+    game.frame = 0;
+    game.second = 0;
 
     map.positions = 5;
     map.point = 0;
@@ -42,6 +51,9 @@ pub fn StartGame() !void {
 }
 
 pub fn Update() !void {
+    game.frame += 1;
+    game.second = game.frame / 60;
+
     while (map.point <= map.positions) {
         enemy.position = enemy.position.moveTowards(map.cords[map.point], enemy.speed);
 
