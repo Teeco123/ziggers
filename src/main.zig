@@ -27,7 +27,7 @@ const screenHeight = 720;
 
 var game: Game = undefined;
 var map: Map = undefined;
-var enemy: Enemy = undefined;
+var enemy = std.mem.zeroes([500]Enemy);
 
 pub fn StartGame() !void {
     rl.initWindow(screenWidth, screenHeight, "Ziggers");
@@ -45,9 +45,10 @@ pub fn StartGame() !void {
     map.cords[4] = Vector2.init(800, 150);
     map.cords[5] = Vector2.init(1280, 150);
 
-    enemy.position = Vector2.init(map.cords[0].x, map.cords[0].y);
-    enemy.speed = 0.6;
-    enemy.size = 10;
+    enemy[0].health = 10;
+    enemy[0].position = Vector2.init(map.cords[0].x, map.cords[0].y);
+    enemy[0].speed = 0.6;
+    enemy[0].size = 10;
 }
 
 pub fn Update() !void {
@@ -55,9 +56,9 @@ pub fn Update() !void {
     game.second = game.frame / 60;
 
     while (map.point <= map.positions) {
-        enemy.position = enemy.position.moveTowards(map.cords[map.point], enemy.speed);
+        enemy[0].position = enemy[0].position.moveTowards(map.cords[map.point], enemy[0].speed);
 
-        if (rl.Vector2.equals(enemy.position, map.cords[map.point]) == 1) {
+        if (rl.Vector2.equals(enemy[0].position, map.cords[map.point]) == 1) {
             map.point += 1;
         }
         break;
@@ -75,7 +76,7 @@ pub fn Draw() !void {
         drawPoint += 1;
     }
 
-    rl.drawPoly(enemy.position, 8, enemy.size, 0, rl.Color.blue);
+    rl.drawPoly(enemy[0].position, 8, enemy[0].size, 0, rl.Color.blue);
 
     defer rl.endDrawing();
 }
