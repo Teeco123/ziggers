@@ -7,6 +7,7 @@ const math = std.math;
 const Game = struct {
     frame: u32,
     second: u32,
+    maxEnemies: u32,
 };
 
 const Map = struct {
@@ -35,6 +36,7 @@ pub fn StartGame() !void {
 
     game.frame = 0;
     game.second = 0;
+    game.maxEnemies = 0;
 
     map.positions = 5;
     map.point = 0;
@@ -45,23 +47,37 @@ pub fn StartGame() !void {
     map.cords[4] = Vector2.init(800, 150);
     map.cords[5] = Vector2.init(1280, 150);
 
-    enemy[0].health = 10;
-    enemy[0].position = Vector2.init(map.cords[0].x, map.cords[0].y);
-    enemy[0].speed = 0.6;
-    enemy[0].size = 10;
+    var enemyNr: u32 = 0;
+    while (enemyNr <= 499) : (enemyNr += 1) {
+        std.log.info("start enemy loop - {}", .{enemyNr});
+        enemy[enemyNr].health = 10;
+        enemy[enemyNr].position = Vector2.init(map.cords[0].x, map.cords[0].y);
+        enemy[enemyNr].speed = 0.6;
+        enemy[enemyNr].size = 10;
+    }
 }
 
 pub fn Update() !void {
     game.frame += 1;
     game.second = game.frame / 60;
 
-    while (map.point <= map.positions) {
-        enemy[0].position = enemy[0].position.moveTowards(map.cords[map.point], enemy[0].speed);
+    var enemyNr: u32 = 0;
 
-        if (rl.Vector2.equals(enemy[0].position, map.cords[map.point]) == 1) {
-            map.point += 1;
+    if (game.frame % 600 == 0) {
+        game.maxEnemies += 1;
+    }
+
+    while (enemyNr <= game.maxEnemies) : (enemyNr += 1) {
+        while (map.point <= map.positions) {
+            enemy[enemyNr].position = enemy[enemyNr].position.moveTowards(map.cords[map.point], enemy[enemyNr].speed);
+
+            if (rl.Vector2.equals(enemy[enemyNr].position, map.cords[map.point]) == 1) {
+                map.point += 1;
+            }
+            break;
         }
-        break;
+        std.log.info("enemyNr - {}", .{enemyNr});
+        std.log.info("maxEnemies - {}", .{game.maxEnemies});
     }
 }
 
