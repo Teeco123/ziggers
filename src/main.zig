@@ -22,6 +22,7 @@ const Enemy = struct {
     mapPoint: u8,
     size: f32,
     speed: f32,
+    isAlive: bool,
 };
 
 const screenWidth = 1280;
@@ -54,8 +55,9 @@ pub fn StartGame() !void {
         enemy[enemyNr].health = 10;
         enemy[enemyNr].position = Vector2.init(map.cords[0].x, map.cords[0].y);
         enemy[enemyNr].mapPoint = 0;
-        enemy[enemyNr].speed = 0.6;
+        enemy[enemyNr].speed = 1;
         enemy[enemyNr].size = 10;
+        enemy[enemyNr].isAlive = true;
     }
 }
 
@@ -76,6 +78,10 @@ pub fn Update() !void {
             if (rl.Vector2.equals(enemy[enemyNr].position, map.cords[enemy[enemyNr].mapPoint]) == 1) {
                 enemy[enemyNr].mapPoint += 1;
             }
+
+            if (enemy[enemyNr].mapPoint == map.positions + 1) {
+                enemy[enemyNr].isAlive = false;
+            }
             break;
         }
     }
@@ -94,7 +100,9 @@ pub fn Draw() !void {
 
     var enemyNr: u32 = 0;
     while (enemyNr <= game.maxEnemies) : (enemyNr += 1) {
-        rl.drawPoly(enemy[enemyNr].position, 8, enemy[enemyNr].size, 0, rl.Color.blue);
+        if (enemy[enemyNr].isAlive) {
+            rl.drawPoly(enemy[enemyNr].position, 8, enemy[enemyNr].size, 0, rl.Color.blue);
+        }
     }
 
     defer rl.endDrawing();
