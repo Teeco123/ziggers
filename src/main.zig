@@ -7,6 +7,7 @@ const math = std.math;
 const Game = struct {
     frame: u32,
     second: u32,
+    health: u32,
     maxEnemies: u32,
 };
 
@@ -38,6 +39,7 @@ pub fn StartGame() !void {
 
     game.frame = 0;
     game.second = 0;
+    game.health = 100;
     game.maxEnemies = 0;
 
     map.positions = 5;
@@ -81,6 +83,7 @@ pub fn Update() !void {
 
             if (enemy[enemyNr].mapPoint == map.positions + 1) {
                 enemy[enemyNr].isAlive = false;
+                game.health -= 1;
             }
             break;
         }
@@ -104,6 +107,8 @@ pub fn Draw() !void {
             rl.drawPoly(enemy[enemyNr].position, 8, enemy[enemyNr].size, 0, rl.Color.blue);
         }
     }
+
+    rl.drawText(rl.textFormat("Health: %01i", .{game.health}), 10, 10, 15, rl.Color.white);
 
     defer rl.endDrawing();
 }
