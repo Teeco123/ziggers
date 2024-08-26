@@ -65,7 +65,7 @@ pub fn Update() !void {
 
     var enemyNr: u32 = 0;
 
-    if (game.frame % 600 == 0) {
+    if (game.frame % 180 == 0) {
         game.maxEnemies += 1;
     }
 
@@ -78,8 +78,6 @@ pub fn Update() !void {
             }
             break;
         }
-        std.log.info("enemyNr - {}", .{enemyNr});
-        std.log.info("maxEnemies - {}", .{game.maxEnemies});
     }
 }
 
