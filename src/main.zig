@@ -19,6 +19,7 @@ const Map = struct {
 const Enemy = struct {
     health: u8,
     position: Vector2,
+    mapPoint: u8,
     size: f32,
     speed: f32,
 };
@@ -52,6 +53,7 @@ pub fn StartGame() !void {
         std.log.info("start enemy loop - {}", .{enemyNr});
         enemy[enemyNr].health = 10;
         enemy[enemyNr].position = Vector2.init(map.cords[0].x, map.cords[0].y);
+        enemy[enemyNr].mapPoint = 0;
         enemy[enemyNr].speed = 0.6;
         enemy[enemyNr].size = 10;
     }
@@ -68,11 +70,11 @@ pub fn Update() !void {
     }
 
     while (enemyNr <= game.maxEnemies) : (enemyNr += 1) {
-        while (map.point <= map.positions) {
-            enemy[enemyNr].position = enemy[enemyNr].position.moveTowards(map.cords[map.point], enemy[enemyNr].speed);
+        while (enemy[enemyNr].mapPoint <= map.positions) {
+            enemy[enemyNr].position = enemy[enemyNr].position.moveTowards(map.cords[enemy[enemyNr].mapPoint], enemy[enemyNr].speed);
 
-            if (rl.Vector2.equals(enemy[enemyNr].position, map.cords[map.point]) == 1) {
-                map.point += 1;
+            if (rl.Vector2.equals(enemy[enemyNr].position, map.cords[enemy[enemyNr].mapPoint]) == 1) {
+                enemy[enemyNr].mapPoint += 1;
             }
             break;
         }
@@ -92,7 +94,10 @@ pub fn Draw() !void {
         drawPoint += 1;
     }
 
-    rl.drawPoly(enemy[0].position, 8, enemy[0].size, 0, rl.Color.blue);
+    var enemyNr: u32 = 0;
+    while (enemyNr <= game.maxEnemies) : (enemyNr += 1) {
+        rl.drawPoly(enemy[enemyNr].position, 8, enemy[enemyNr].size, 0, rl.Color.blue);
+    }
 
     defer rl.endDrawing();
 }
