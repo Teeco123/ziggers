@@ -55,7 +55,6 @@ pub fn StartGame() !void {
 
     var enemyNr: u32 = 0;
     while (enemyNr <= 499) : (enemyNr += 1) {
-        std.log.info("start enemy loop - {}", .{enemyNr});
         enemy[enemyNr].health = 10;
         enemy[enemyNr].position = Vector2.init(map.cords[0].x, map.cords[0].y);
         enemy[enemyNr].mapPoint = 0;
@@ -66,9 +65,11 @@ pub fn StartGame() !void {
 }
 
 pub fn Update() !void {
+    //Updating timers
     game.frame += 1;
     game.second = game.frame / 60;
 
+    //Updating position of each enemy and spawning themm
     var enemyNr: u32 = 0;
 
     if (game.frame % 180 == 0) {
@@ -77,12 +78,15 @@ pub fn Update() !void {
 
     while (enemyNr <= game.maxEnemies) : (enemyNr += 1) {
         while (enemy[enemyNr].mapPoint <= map.positions) {
+            //Move enemy to point on map
             enemy[enemyNr].position = enemy[enemyNr].position.moveTowards(map.cords[enemy[enemyNr].mapPoint], enemy[enemyNr].speed);
 
+            //Update map point that enemy should move to
             if (rl.Vector2.equals(enemy[enemyNr].position, map.cords[enemy[enemyNr].mapPoint]) == 1) {
                 enemy[enemyNr].mapPoint += 1;
             }
 
+            //Decrease health when enemy makes to the end
             if (enemy[enemyNr].mapPoint == map.positions + 1) {
                 enemy[enemyNr].isAlive = false;
                 game.health -= 1;
@@ -97,12 +101,14 @@ pub fn Draw() !void {
 
     rl.clearBackground(rl.Color.black);
 
+    //Drawing map lines
     var drawPoint: u8 = 0;
     while (drawPoint < map.positions) {
         rl.drawLineV(map.cords[drawPoint], map.cords[drawPoint + 1], rl.Color.pink);
         drawPoint += 1;
     }
 
+    //Drawing enemy
     var enemyNr: u32 = 0;
     while (enemyNr <= game.maxEnemies) : (enemyNr += 1) {
         if (enemy[enemyNr].isAlive) {
@@ -110,10 +116,13 @@ pub fn Draw() !void {
         }
     }
 
+    //Drawing turret
     rl.drawPolyLines(map.turretCords[0], 4, 20, 45, rl.Color.blue);
     rl.drawPolyLines(map.turretCords[0], 3, 10, 0, rl.Color.white);
+    //Drawing turret range
     rl.drawCircleLinesV(map.turretCords[0], 150, rl.Color.alpha(rl.Color.gray, 0.7));
 
+    //Displaying health
     rl.drawText(rl.textFormat("Health: %01i", .{game.health}), 10, 10, 15, rl.Color.white);
 
     defer rl.endDrawing();
