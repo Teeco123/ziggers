@@ -14,6 +14,7 @@ const Game = struct {
 const Map = struct {
     positions: u8,
     cords: [10]Vector2,
+    turretCords: [10]Vector2,
     point: u8,
 };
 
@@ -44,6 +45,7 @@ pub fn StartGame() !void {
 
     map.positions = 5;
     map.point = 0;
+    map.turretCords[0] = Vector2.init(200, 230);
     map.cords[0] = Vector2.init(0, 300);
     map.cords[1] = Vector2.init(400, 300);
     map.cords[2] = Vector2.init(400, 500);
@@ -104,9 +106,13 @@ pub fn Draw() !void {
     var enemyNr: u32 = 0;
     while (enemyNr <= game.maxEnemies) : (enemyNr += 1) {
         if (enemy[enemyNr].isAlive) {
-            rl.drawPoly(enemy[enemyNr].position, 8, enemy[enemyNr].size, 0, rl.Color.blue);
+            rl.drawPoly(enemy[enemyNr].position, 8, enemy[enemyNr].size, 0, rl.Color.red);
         }
     }
+
+    rl.drawPolyLines(map.turretCords[0], 4, 20, 45, rl.Color.blue);
+    rl.drawPolyLines(map.turretCords[0], 3, 10, 0, rl.Color.white);
+    rl.drawCircleLinesV(map.turretCords[0], 150, rl.Color.alpha(rl.Color.gray, 0.7));
 
     rl.drawText(rl.textFormat("Health: %01i", .{game.health}), 10, 10, 15, rl.Color.white);
 
