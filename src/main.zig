@@ -91,6 +91,10 @@ pub fn Update() !void {
                 enemy[enemyNr].isAlive = false;
                 game.health -= 1;
             }
+
+            if (rl.checkCollisionPointCircle(enemy[enemyNr].position, map.turretCords[0], 150)) {
+                std.log.info("HUJ", .{});
+            }
             break;
         }
     }
