@@ -21,10 +21,17 @@ const Map = struct {
 const Enemy = struct {
     health: u8,
     position: Vector2,
+    tick: u32,
     mapPoint: u8,
     size: f32,
     speed: f32,
     isAlive: bool,
+};
+
+const Turret = struct {
+    enemies: [500]u32,
+    inRange: [500]bool,
+    maxTick: u32,
 };
 
 const screenWidth = 1280;
@@ -33,6 +40,7 @@ const screenHeight = 720;
 var game: Game = undefined;
 var map: Map = undefined;
 var enemy = std.mem.zeroes([500]Enemy);
+var turret: Turret = undefined;
 
 pub fn StartGame() !void {
     rl.initWindow(screenWidth, screenHeight, "Ziggers");
@@ -57,6 +65,7 @@ pub fn StartGame() !void {
     while (enemyNr <= 499) : (enemyNr += 1) {
         enemy[enemyNr].health = 10;
         enemy[enemyNr].position = Vector2.init(map.cords[0].x, map.cords[0].y);
+        enemy[enemyNr].tick = 0;
         enemy[enemyNr].mapPoint = 0;
         enemy[enemyNr].speed = 1;
         enemy[enemyNr].size = 10;
@@ -78,6 +87,8 @@ pub fn Update() !void {
 
     while (enemyNr <= game.maxEnemies) : (enemyNr += 1) {
         while (enemy[enemyNr].mapPoint <= map.positions) {
+            enemy[enemyNr].tick += 1;
+
             //Move enemy to point on map
             enemy[enemyNr].position = enemy[enemyNr].position.moveTowards(map.cords[enemy[enemyNr].mapPoint], enemy[enemyNr].speed);
 
@@ -93,11 +104,17 @@ pub fn Update() !void {
             }
 
             if (rl.checkCollisionPointCircle(enemy[enemyNr].position, map.turretCords[0], 150)) {
-                std.log.info("HUJ", .{});
+                turret.enemies[enemyNr] = enemy[enemyNr].tick;
+                turret.inRange[enemyNr] = true;
+            } else {
+                turret.inRange[enemyNr] = false;
             }
+
+            if (turret.inRange[enemyNr] == true) {}
             break;
         }
     }
+    std.log.info("tick: {}", .{enemy[0].tick});
 }
 
 pub fn Draw() !void {
