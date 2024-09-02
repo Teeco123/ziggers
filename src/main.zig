@@ -3,6 +3,7 @@ const rl = @import("raylib");
 
 const Vector2 = rl.Vector2;
 const math = std.math;
+const mem = std.mem;
 
 const Map = struct {
     name: []const u8,
@@ -48,10 +49,15 @@ pub fn StartGame() !void {
         .cords = try std.BoundedArray(Vector2, 100).init(0),
         .turretCords = try std.BoundedArray(Vector2, 10).init(0),
         .point = 0,
-        .isChoosen = false,
+        .isChoosen = true,
     };
 
-    try monkeyMeadow.cords.append(Vector2.init(15, 15));
+    try monkeyMeadow.cords.append(Vector2.init(0, 300));
+    try monkeyMeadow.cords.append(Vector2.init(400, 300));
+    try monkeyMeadow.cords.append(Vector2.init(400, 500));
+    try monkeyMeadow.cords.append(Vector2.init(800, 500));
+    try monkeyMeadow.cords.append(Vector2.init(800, 150));
+    try monkeyMeadow.cords.append(Vector2.init(1280, 150));
 
     try game.maps.append(monkeyMeadow);
 
@@ -61,6 +67,10 @@ pub fn StartGame() !void {
 
     std.log.info("items {any}", .{items});
     std.log.info("cord {}", .{cord});
+
+    for (game.maps.items) |map| {
+        std.log.info("{any}", .{map.name});
+    }
 }
 
 pub fn Update() !void {}
