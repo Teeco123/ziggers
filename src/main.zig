@@ -5,6 +5,7 @@ const Vector2 = rl.Vector2;
 const math = std.math;
 
 const Map = struct {
+    name: []const u8,
     positions: u8,
     cords: std.BoundedArray(Vector2, 100),
     turretCords: std.BoundedArray(Vector2, 10),
@@ -42,6 +43,7 @@ pub fn StartGame() !void {
     defer game.maps.deinit();
 
     var monkeyMeadow = Map{
+        .name = "Monkey Meadow",
         .positions = 4,
         .cords = try std.BoundedArray(Vector2, 100).init(0),
         .turretCords = try std.BoundedArray(Vector2, 10).init(0),
@@ -55,7 +57,7 @@ pub fn StartGame() !void {
 
     const cord = monkeyMeadow.cords.get(0);
 
-    const items = game.maps.items.len;
+    const items = game.maps.items;
 
     std.log.info("items {any}", .{items});
     std.log.info("cord {}", .{cord});
