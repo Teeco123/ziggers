@@ -30,19 +30,6 @@ pub fn StartGame() !void {
     rl.initWindow(screenWidth, screenHeight, "Ziggers");
     rl.setTargetFPS(60);
 
-    var gpa = std.heap.GeneralPurposeAllocator(.{}){};
-    const allocator = gpa.allocator();
-    defer std.debug.assert(gpa.deinit() == .ok);
-
-    game = .{
-        .frame = 0,
-        .choosingMap = true,
-        .health = 100,
-        .maps = std.ArrayList(Map).init(allocator),
-    };
-
-    defer game.maps.deinit();
-
     var monkeyMeadow = Map{
         .name = "Monkey Meadow",
         .positions = 4,
@@ -67,13 +54,13 @@ pub fn StartGame() !void {
 
     std.log.info("items {any}", .{items});
     std.log.info("cord {}", .{cord});
+}
 
+pub fn Update() !void {
     for (game.maps.items) |map| {
         std.log.info("{any}", .{map.name});
     }
 }
-
-pub fn Update() !void {}
 
 pub fn Draw() !void {
     rl.beginDrawing();
@@ -84,11 +71,25 @@ pub fn Draw() !void {
 }
 
 pub fn main() !void {
+    var gpa = std.heap.GeneralPurposeAllocator(.{}){};
+    const allocator = gpa.allocator();
+    defer std.debug.assert(gpa.deinit() == .ok);
+
+    game = .{
+        .frame = 0,
+        .choosingMap = true,
+        .health = 100,
+        .maps = std.ArrayList(Map).init(allocator),
+    };
+
+    defer game.maps.deinit();
+
     try StartGame();
 
     while (!rl.windowShouldClose()) {
         try Update();
         try Draw();
     }
+
     rl.closeWindow();
 }
