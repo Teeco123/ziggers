@@ -6,13 +6,15 @@ const math = std.math;
 
 const Map = struct {
     positions: u8,
-    cords: [10]Vector2,
-    turretCords: [10]Vector2,
+    cords: std.BoundedArray(Vector2, 100),
+    turretCords: std.BoundedArray(Vector2, 10),
     point: u8,
+    isChoosen: bool,
 };
 
 const Game = struct {
     frame: usize,
+    choosingMap: bool,
     health: usize,
     maps: std.ArrayList(Map),
 };
@@ -32,9 +34,31 @@ pub fn StartGame() !void {
 
     game = .{
         .frame = 0,
+        .choosingMap = true,
         .health = 100,
         .maps = std.ArrayList(Map).init(allocator),
     };
+
+    defer game.maps.deinit();
+
+    var monkeyMeadow = Map{
+        .positions = 4,
+        .cords = try std.BoundedArray(Vector2, 100).init(0),
+        .turretCords = try std.BoundedArray(Vector2, 10).init(0),
+        .point = 0,
+        .isChoosen = false,
+    };
+
+    try monkeyMeadow.cords.append(Vector2.init(15, 15));
+
+    try game.maps.append(monkeyMeadow);
+
+    const cord = monkeyMeadow.cords.get(0);
+
+    const items = game.maps.items.len;
+
+    std.log.info("items {any}", .{items});
+    std.log.info("cord {}", .{cord});
 }
 
 pub fn Update() !void {}
@@ -42,9 +66,9 @@ pub fn Update() !void {}
 pub fn Draw() !void {
     rl.beginDrawing();
 
-    rl.clearBackground(rl.Color.black);
-
     defer rl.endDrawing();
+
+    rl.clearBackground(rl.Color.black);
 }
 
 pub fn main() !void {
