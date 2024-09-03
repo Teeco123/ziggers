@@ -75,7 +75,7 @@ pub fn Update() !void {
             //const mapPoint = map.cords.get(enemy.mapPoint);
             enemyPtr.position = enemy.position.moveTowards(Vector2.init(1000, 1000), 100);
 
-            std.log.info("{}", .{enemyPtr.position});
+            std.log.info("position: {}", .{enemyPtr.position});
             //}
         }
     }
