@@ -48,19 +48,15 @@ pub fn StartGame() !void {
 
     try game.maps.append(monkeyMeadow);
 
-    const cord = monkeyMeadow.cords.get(0);
+    //const cord = monkeyMeadow.cords.get(0);
 
-    const items = game.maps.items;
+    //const items = game.maps.items;
 
-    std.log.info("items {any}", .{items});
-    std.log.info("cord {}", .{cord});
+    //std.log.info("items {any}", .{items});
+    //std.log.info("cord {}", .{cord});
 }
 
-pub fn Update() !void {
-    for (game.maps.items) |map| {
-        std.log.info("{any}", .{map.name});
-    }
-}
+pub fn Update() !void {}
 
 pub fn Draw() !void {
     rl.beginDrawing();
@@ -68,6 +64,10 @@ pub fn Draw() !void {
     defer rl.endDrawing();
 
     rl.clearBackground(rl.Color.black);
+
+    for (game.maps.items) |map| {
+        rl.drawLineStrip(map.cords.slice(), rl.Color.pink);
+    }
 }
 
 pub fn main() !void {
