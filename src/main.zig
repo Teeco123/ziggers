@@ -16,8 +16,9 @@ const Map = struct {
 
 const Enemy = struct {
     position: Vector2,
+    mapPoint: u8,
     size: f32,
-    speed: u8,
+    speed: f32,
 };
 
 const Game = struct {
@@ -60,11 +61,23 @@ pub fn Update() !void {
     if (game.frame % 180 == 0) {
         const enemy = Enemy{
             .position = Vector2.init(0, 300),
+            .mapPoint = 3,
             .size = 8,
             .speed = 1,
         };
 
         try game.enemies.append(enemy);
+    }
+
+    for (game.enemies.items) |*enemyPtr| {
+        for (game.enemies.items) |enemy| {
+            //for (game.maps.items) |map| {
+            //const mapPoint = map.cords.get(enemy.mapPoint);
+            enemyPtr.position = enemy.position.moveTowards(Vector2.init(1000, 1000), 100);
+
+            std.log.info("{}", .{enemyPtr.position});
+            //}
+        }
     }
 }
 
