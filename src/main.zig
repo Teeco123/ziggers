@@ -14,11 +14,18 @@ const Map = struct {
     isChoosen: bool,
 };
 
+const Enemy = struct {
+    position: Vector2,
+    size: f32,
+    speed: u8,
+};
+
 const Game = struct {
     frame: usize,
     choosingMap: bool,
     health: usize,
     maps: std.ArrayList(Map),
+    enemies: std.ArrayList(Enemy),
 };
 
 var game: Game = undefined;
@@ -47,16 +54,19 @@ pub fn StartGame() !void {
     try monkeyMeadow.cords.append(Vector2.init(1280, 150));
 
     try game.maps.append(monkeyMeadow);
-
-    //const cord = monkeyMeadow.cords.get(0);
-
-    //const items = game.maps.items;
-
-    //std.log.info("items {any}", .{items});
-    //std.log.info("cord {}", .{cord});
 }
 
-pub fn Update() !void {}
+pub fn Update() !void {
+    if (game.frame % 180 == 0) {
+        const enemy = Enemy{
+            .position = Vector2.init(0, 300),
+            .size = 8,
+            .speed = 1,
+        };
+
+        try game.enemies.append(enemy);
+    }
+}
 
 pub fn Draw() !void {
     rl.beginDrawing();
@@ -65,8 +75,14 @@ pub fn Draw() !void {
 
     rl.clearBackground(rl.Color.black);
 
+    //Drawing map
     for (game.maps.items) |map| {
         rl.drawLineStrip(map.cords.slice(), rl.Color.pink);
+    }
+
+    //Draw enemies
+    for (game.enemies.items) |enemy| {
+        rl.drawPoly(enemy.position, 8, enemy.size, 0, rl.Color.red);
     }
 }
 
@@ -80,9 +96,11 @@ pub fn main() !void {
         .choosingMap = true,
         .health = 100,
         .maps = std.ArrayList(Map).init(allocator),
+        .enemies = std.ArrayList(Enemy).init(allocator),
     };
 
     defer game.maps.deinit();
+    defer game.enemies.deinit();
 
     try StartGame();
 
