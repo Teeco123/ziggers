@@ -21,7 +21,9 @@ const Enemy = struct {
     isAlive: bool,
 };
 
-const Turret = struct {};
+const Turret = struct {
+    range: u8,
+};
 
 const Game = struct {
     frame: usize,
@@ -60,7 +62,7 @@ pub fn StartGame() !void {
 
     try game.maps.append(monkeyMeadow);
 
-    const turret1 = Turret{};
+    const turret1 = Turret{ .range = 10 };
 
     try game.turrets.append(turret1);
 }
@@ -123,6 +125,7 @@ pub fn Draw() !void {
     var turretNmbr: u8 = 0;
     for (game.maps.items) |map| {
         rl.drawPoly(map.turretCords.get(turretNmbr), 4, 8, 0, rl.Color.blue);
+        rl.drawCircleLinesV(map.turretCords.get(turretNmbr), 150, rl.Color.alpha(rl.Color.gray, 0.7));
         turretNmbr += 1;
     }
     //}
@@ -147,6 +150,7 @@ pub fn main() !void {
 
     defer game.maps.deinit();
     defer game.enemies.deinit();
+    defer game.turrets.deinit();
 
     try StartGame();
 
