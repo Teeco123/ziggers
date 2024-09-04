@@ -19,6 +19,7 @@ const Enemy = struct {
     mapPoint: u8,
     size: f32,
     speed: f32,
+    isAlive: bool,
 };
 
 const Game = struct {
@@ -66,6 +67,7 @@ pub fn Update() !void {
             .mapPoint = 1,
             .size = 8,
             .speed = 1,
+            .isAlive = true,
         };
         try game.enemies.append(enemy);
     }
@@ -73,9 +75,14 @@ pub fn Update() !void {
     for (game.enemies.items) |*enemyPtr| {
         for (game.maps.items) |map| {
             const mapPoint = map.cords.get(enemyPtr.mapPoint);
+            const lastPoint = map.cords.get(map.positions);
 
             if (enemyPtr.position.equals(mapPoint) == 1 and enemyPtr.mapPoint < map.positions) {
                 enemyPtr.mapPoint += 1;
+            }
+
+            if (enemyPtr.position.equals(lastPoint) == 1) {
+                enemyPtr.isAlive = false;
             }
             enemyPtr.position = enemyPtr.position.moveTowards(mapPoint, 1);
         }
@@ -96,7 +103,9 @@ pub fn Draw() !void {
 
     //Draw enemies
     for (game.enemies.items) |enemy| {
-        rl.drawPoly(enemy.position, 8, enemy.size, 0, rl.Color.red);
+        if (enemy.isAlive) {
+            rl.drawPoly(enemy.position, 8, enemy.size, 0, rl.Color.red);
+        }
     }
 }
 
