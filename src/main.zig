@@ -62,7 +62,7 @@ pub fn Update() !void {
     if (game.frame % 180 == 0) {
         const enemy = Enemy{
             .position = Vector2.init(0, 300),
-            .mapPoint = 1,
+            .mapPoint = 0,
             .size = 8,
             .speed = 1,
             .isAlive = true,
@@ -71,18 +71,22 @@ pub fn Update() !void {
     }
 
     for (game.enemies.items) |*enemyPtr| {
-        for (game.maps.items) |map| {
-            const mapPoint = map.cords.get(enemyPtr.mapPoint);
-            const lastPoint = map.cords.get(map.positions);
+        if (enemyPtr.isAlive) {
+            for (game.maps.items) |map| {
+                const mapPoint = map.cords.get(enemyPtr.mapPoint);
+                const lastPoint = map.cords.get(map.positions);
 
-            if (enemyPtr.position.equals(mapPoint) == 1 and enemyPtr.mapPoint < map.positions) {
-                enemyPtr.mapPoint += 1;
-            }
+                if (enemyPtr.position.equals(mapPoint) == 1 and enemyPtr.mapPoint < map.positions) {
+                    enemyPtr.mapPoint += 1;
+                }
 
-            if (enemyPtr.position.equals(lastPoint) == 1) {
-                enemyPtr.isAlive = false;
+                if (enemyPtr.position.equals(lastPoint) == 1) {
+                    enemyPtr.isAlive = false;
+                    enemyPtr.position = Vector2.init(0, 0);
+                    game.health -= 1;
+                }
+                enemyPtr.position = enemyPtr.position.moveTowards(mapPoint, 1);
             }
-            enemyPtr.position = enemyPtr.position.moveTowards(mapPoint, 1);
         }
     }
 }
@@ -105,6 +109,9 @@ pub fn Draw() !void {
             rl.drawPoly(enemy.position, 8, enemy.size, 0, rl.Color.red);
         }
     }
+
+    //Drawing health
+    rl.drawText(rl.textFormat("Health: %01i", .{game.health}), 10, 10, 15, rl.Color.white);
 }
 
 pub fn main() !void {
