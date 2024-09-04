@@ -10,7 +10,6 @@ const Map = struct {
     positions: u8,
     cords: std.BoundedArray(Vector2, 100),
     turretCords: std.BoundedArray(Vector2, 10),
-    point: u8,
     isChoosen: bool,
 };
 
@@ -44,7 +43,6 @@ pub fn StartGame() !void {
         .positions = 5,
         .cords = try std.BoundedArray(Vector2, 100).init(0),
         .turretCords = try std.BoundedArray(Vector2, 10).init(0),
-        .point = 0,
         .isChoosen = true,
     };
 
