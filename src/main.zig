@@ -21,12 +21,15 @@ const Enemy = struct {
     isAlive: bool,
 };
 
+const Turret = struct {};
+
 const Game = struct {
     frame: usize,
     choosingMap: bool,
     health: usize,
     maps: std.ArrayList(Map),
     enemies: std.ArrayList(Enemy),
+    turrets: std.ArrayList(Turret),
 };
 
 var game: Game = undefined;
@@ -53,7 +56,13 @@ pub fn StartGame() !void {
     try monkeyMeadow.cords.append(Vector2.init(800, 150));
     try monkeyMeadow.cords.append(Vector2.init(1280, 150));
 
+    try monkeyMeadow.turretCords.append(Vector2.init(200, 230));
+
     try game.maps.append(monkeyMeadow);
+
+    const turret1 = Turret{};
+
+    try game.turrets.append(turret1);
 }
 
 pub fn Update() !void {
@@ -110,6 +119,14 @@ pub fn Draw() !void {
         }
     }
 
+    //for(game.turrets.items) |turret| {
+    var turretNmbr: u8 = 0;
+    for (game.maps.items) |map| {
+        rl.drawPoly(map.turretCords.get(turretNmbr), 4, 8, 0, rl.Color.blue);
+        turretNmbr += 1;
+    }
+    //}
+
     //Drawing health
     rl.drawText(rl.textFormat("Health: %01i", .{game.health}), 10, 10, 15, rl.Color.white);
 }
@@ -125,6 +142,7 @@ pub fn main() !void {
         .health = 100,
         .maps = std.ArrayList(Map).init(allocator),
         .enemies = std.ArrayList(Enemy).init(allocator),
+        .turrets = std.ArrayList(Turret).init(allocator),
     };
 
     defer game.maps.deinit();
