@@ -40,7 +40,7 @@ pub fn StartGame() !void {
 
     var monkeyMeadow = Map{
         .name = "Monkey Meadow",
-        .positions = 4,
+        .positions = 5,
         .cords = try std.BoundedArray(Vector2, 100).init(0),
         .turretCords = try std.BoundedArray(Vector2, 10).init(0),
         .point = 0,
@@ -58,25 +58,26 @@ pub fn StartGame() !void {
 }
 
 pub fn Update() !void {
+    game.frame += 1;
+
     if (game.frame % 180 == 0) {
         const enemy = Enemy{
             .position = Vector2.init(0, 300),
-            .mapPoint = 3,
+            .mapPoint = 1,
             .size = 8,
             .speed = 1,
         };
-
         try game.enemies.append(enemy);
     }
 
     for (game.enemies.items) |*enemyPtr| {
-        for (game.enemies.items) |enemy| {
-            //for (game.maps.items) |map| {
-            //const mapPoint = map.cords.get(enemy.mapPoint);
-            enemyPtr.position = enemy.position.moveTowards(Vector2.init(1000, 1000), 100);
+        for (game.maps.items) |map| {
+            const mapPoint = map.cords.get(enemyPtr.mapPoint);
 
-            std.log.info("position: {}", .{enemyPtr.position});
-            //}
+            if (enemyPtr.position.equals(mapPoint) == 1 and enemyPtr.mapPoint < map.positions) {
+                enemyPtr.mapPoint += 1;
+            }
+            enemyPtr.position = enemyPtr.position.moveTowards(mapPoint, 1);
         }
     }
 }
