@@ -22,7 +22,8 @@ const Enemy = struct {
 };
 
 const Turret = struct {
-    range: u8,
+    range: f32,
+    enemies: std.BoundedArray(Enemy, 100),
 };
 
 const Game = struct {
@@ -62,7 +63,10 @@ pub fn StartGame() !void {
 
     try game.maps.append(monkeyMeadow);
 
-    const turret1 = Turret{ .range = 10 };
+    const turret1 = Turret{
+        .range = 150,
+        .enemies = try std.BoundedArray(Enemy, 100).init(0),
+    };
 
     try game.turrets.append(turret1);
 }
@@ -81,22 +85,34 @@ pub fn Update() !void {
         try game.enemies.append(enemy);
     }
 
+    var turretNmbr: u8 = 0;
     for (game.enemies.items) |*enemyPtr| {
         if (enemyPtr.isAlive) {
             for (game.maps.items) |map| {
-                const mapPoint = map.cords.get(enemyPtr.mapPoint);
-                const lastPoint = map.cords.get(map.positions);
+                for (game.turrets.items) |*turretPtr| {
+                    if (rl.checkCollisionPointCircle(enemyPtr.position, map.turretCords.get(0), turretPtr.range)) {
+                        //try turretPtr.enemies.append(enemyPtr.*);
+                        std.log.info("Enemy in range", .{});
+                    }
 
-                if (enemyPtr.position.equals(mapPoint) == 1 and enemyPtr.mapPoint < map.positions) {
-                    enemyPtr.mapPoint += 1;
-                }
+                    const mapPoint = map.cords.get(enemyPtr.mapPoint);
+                    const lastPoint = map.cords.get(map.positions);
 
-                if (enemyPtr.position.equals(lastPoint) == 1) {
-                    enemyPtr.isAlive = false;
-                    enemyPtr.position = Vector2.init(0, 0);
-                    game.health -= 1;
+                    if (enemyPtr.position.equals(mapPoint) == 1 and enemyPtr.mapPoint < map.positions) {
+                        enemyPtr.mapPoint += 1;
+                    }
+
+                    if (enemyPtr.position.equals(lastPoint) == 1) {
+                        enemyPtr.isAlive = false;
+
+                        game.health -= 1;
+                    }
+                    enemyPtr.position = enemyPtr.position.moveTowards(mapPoint, 1);
+
+                    if (game.turrets.items.len < turretNmbr) {
+                        turretNmbr += 1;
+                    }
                 }
-                enemyPtr.position = enemyPtr.position.moveTowards(mapPoint, 1);
             }
         }
     }
