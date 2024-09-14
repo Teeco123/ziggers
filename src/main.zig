@@ -31,7 +31,7 @@ const Game = struct {
     frame: usize,
     choosingMap: bool,
     health: usize,
-    maps: std.AutoHashMap([*:0]const u8, Map),
+    maps: std.AutoArrayHashMap([*:0]const u8, Map),
     enemies: std.ArrayList(Enemy),
     turrets: std.ArrayList(Turret),
 };
@@ -50,7 +50,23 @@ pub fn StartGame() !void {
         .positions = 5,
         .cords = try std.BoundedArray(Vector2, 100).init(0),
         .turretCords = try std.BoundedArray(Vector2, 10).init(0),
-        .isChoosen = true,
+        .isChoosen = false,
+    };
+
+    const townCenter = Map{
+        .name = "Town Center",
+        .positions = 5,
+        .cords = try std.BoundedArray(Vector2, 100).init(0),
+        .turretCords = try std.BoundedArray(Vector2, 10).init(0),
+        .isChoosen = false,
+    };
+
+    const logs = Map{
+        .name = "Logs",
+        .positions = 5,
+        .cords = try std.BoundedArray(Vector2, 100).init(0),
+        .turretCords = try std.BoundedArray(Vector2, 10).init(0),
+        .isChoosen = false,
     };
 
     try monkeyMeadow.cords.append(Vector2.init(0, 300));
@@ -63,6 +79,8 @@ pub fn StartGame() !void {
     try monkeyMeadow.turretCords.append(Vector2.init(200, 230));
 
     try game.maps.put(monkeyMeadow.name, monkeyMeadow);
+    try game.maps.put(townCenter.name, townCenter);
+    try game.maps.put(logs.name, logs);
 
     // const turret1 = Turret{
     //     .range = 150,
@@ -135,9 +153,10 @@ pub fn Draw() !void {
 
     if (game.choosingMap) {
         var mapsIterator = game.maps.iterator();
-
+        var height: i32 = 0;
         while (mapsIterator.next()) |map| {
-            rl.drawText(map.value_ptr.name, 0, 0, 20, rl.Color.white);
+            rl.drawText(map.value_ptr.name, 0, height, 20, rl.Color.white);
+            height += 25;
         }
     }
 
@@ -175,7 +194,7 @@ pub fn main() !void {
         .frame = 0,
         .choosingMap = true,
         .health = 100,
-        .maps = std.AutoHashMap([*:0]const u8, Map).init(allocator),
+        .maps = std.AutoArrayHashMap([*:0]const u8, Map).init(allocator),
         .enemies = std.ArrayList(Enemy).init(allocator),
         .turrets = std.ArrayList(Turret).init(allocator),
     };
