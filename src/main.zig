@@ -11,7 +11,6 @@ const Map = struct {
     positions: u8,
     cords: std.BoundedArray(Vector2, 100),
     turretCords: std.BoundedArray(Vector2, 10),
-    isChoosen: bool,
 };
 
 const Enemy = struct {
@@ -31,6 +30,7 @@ const Turret = struct {
 const Game = struct {
     frame: usize,
     choosingMap: bool,
+    mapChoosen: u8,
     health: usize,
     maps: std.AutoArrayHashMap(usize, Map),
     enemies: std.ArrayList(Enemy),
@@ -54,7 +54,6 @@ pub fn StartGame() !void {
         .positions = 5,
         .cords = try std.BoundedArray(Vector2, 100).init(0),
         .turretCords = try std.BoundedArray(Vector2, 10).init(0),
-        .isChoosen = false,
     };
 
     const townCenter = Map{
@@ -63,7 +62,6 @@ pub fn StartGame() !void {
         .positions = 5,
         .cords = try std.BoundedArray(Vector2, 100).init(0),
         .turretCords = try std.BoundedArray(Vector2, 10).init(0),
-        .isChoosen = false,
     };
 
     const logs = Map{
@@ -72,7 +70,6 @@ pub fn StartGame() !void {
         .positions = 5,
         .cords = try std.BoundedArray(Vector2, 100).init(0),
         .turretCords = try std.BoundedArray(Vector2, 10).init(0),
-        .isChoosen = false,
     };
 
     try monkeyMeadow.cords.append(Vector2.init(0, 300));
@@ -99,7 +96,25 @@ pub fn StartGame() !void {
 pub fn Update() !void {
     game.frame += 1;
 
-    if (game.choosingMap) {}
+    if (game.choosingMap) {
+        const nmbrOfMaps: i32 = @intCast(game.maps.count());
+
+        //Handle up / down input
+        if (rl.isKeyPressed(rl.KeyboardKey.key_up)) {
+            selectorHeight -= 25;
+        }
+        if (rl.isKeyPressed(rl.KeyboardKey.key_down)) {
+            selectorHeight += 25;
+        }
+
+        //Handle selector out of maps count
+        if (selectorHeight < 0) {
+            selectorHeight = (nmbrOfMaps - 1) * 25;
+        }
+        if (selectorHeight > (game.maps.count() - 1) * 25) {
+            selectorHeight = 0;
+        }
+    }
 
     // if (game.frame % 180 == 0) {
     //     const enemy = Enemy{
@@ -158,26 +173,12 @@ pub fn Draw() !void {
     rl.clearBackground(rl.Color.black);
 
     if (game.choosingMap) {
-        const nmbrOfMaps: i32 = @intCast(game.maps.count());
-
-        if (rl.isKeyPressed(rl.KeyboardKey.key_up)) {
-            selectorHeight -= 25;
-        }
-        if (rl.isKeyPressed(rl.KeyboardKey.key_down)) {
-            selectorHeight += 25;
-        }
-
-        if (selectorHeight < 0) {
-            selectorHeight = (nmbrOfMaps - 1) * 25;
-        }
-        if (selectorHeight > (game.maps.count() - 1) * 25) {
-            selectorHeight = 0;
-        }
-
         std.log.info("{}", .{@divFloor(selectorHeight, 25)});
 
+        //Drawing arrow selector
         rl.drawText("<-", 200, selectorHeight, 25, rl.Color.white);
 
+        //Drawing all maps names
         var mapsIterator = game.maps.iterator();
         var height: i32 = 0;
         while (mapsIterator.next()) |map| {
@@ -219,6 +220,7 @@ pub fn main() !void {
     game = .{
         .frame = 0,
         .choosingMap = true,
+        .mapChoosen = 0,
         .health = 100,
         .maps = std.AutoArrayHashMap(usize, Map).init(allocator),
         .enemies = std.ArrayList(Enemy).init(allocator),
