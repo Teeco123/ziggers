@@ -30,7 +30,7 @@ const Turret = struct {
 const Game = struct {
     frame: usize,
     choosingMap: bool,
-    mapChoosen: u8,
+    choosenMap: i32,
     health: usize,
     maps: std.AutoArrayHashMap(usize, Map),
     enemies: std.ArrayList(Enemy),
@@ -106,6 +106,9 @@ pub fn Update() !void {
         if (rl.isKeyPressed(rl.KeyboardKey.key_down)) {
             selectorHeight += 25;
         }
+        if (rl.isKeyPressed(rl.KeyboardKey.key_enter)) {
+            game.choosenMap = @divFloor(selectorHeight, 25);
+        }
 
         //Handle selector out of maps count
         if (selectorHeight < 0) {
@@ -173,8 +176,6 @@ pub fn Draw() !void {
     rl.clearBackground(rl.Color.black);
 
     if (game.choosingMap) {
-        std.log.info("{}", .{@divFloor(selectorHeight, 25)});
-
         //Drawing arrow selector
         rl.drawText("<-", 200, selectorHeight, 25, rl.Color.white);
 
@@ -220,7 +221,7 @@ pub fn main() !void {
     game = .{
         .frame = 0,
         .choosingMap = true,
-        .mapChoosen = 0,
+        .choosenMap = 0,
         .health = 100,
         .maps = std.AutoArrayHashMap(usize, Map).init(allocator),
         .enemies = std.ArrayList(Enemy).init(allocator),
