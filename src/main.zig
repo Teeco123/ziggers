@@ -41,6 +41,8 @@ var game: Game = undefined;
 const screenWidth = 1280;
 const screenHeight = 720;
 
+var selectorHeight: i32 = 0;
+
 pub fn StartGame() !void {
     rl.initWindow(screenWidth, screenHeight, "Ziggers");
     rl.setTargetFPS(60);
@@ -152,6 +154,24 @@ pub fn Draw() !void {
     rl.clearBackground(rl.Color.black);
 
     if (game.choosingMap) {
+        const nmbrOfMaps: i32 = @intCast(game.maps.count());
+
+        if (rl.isKeyPressed(rl.KeyboardKey.key_up)) {
+            selectorHeight -= 25;
+        }
+        if (rl.isKeyPressed(rl.KeyboardKey.key_down)) {
+            selectorHeight += 25;
+        }
+
+        if (selectorHeight < 0) {
+            selectorHeight = (nmbrOfMaps - 1) * 25;
+        }
+        if (selectorHeight > (game.maps.count() - 1) * 25) {
+            selectorHeight = 0;
+        }
+
+        rl.drawText("<-", 200, selectorHeight, 25, rl.Color.white);
+
         var mapsIterator = game.maps.iterator();
         var height: i32 = 0;
         while (mapsIterator.next()) |map| {
