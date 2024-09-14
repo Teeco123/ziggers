@@ -6,7 +6,7 @@ const math = std.math;
 const mem = std.mem;
 
 const Map = struct {
-    name: []const u8,
+    name: [*:0]const u8,
     positions: u8,
     cords: std.BoundedArray(Vector2, 100),
     turretCords: std.BoundedArray(Vector2, 10),
@@ -14,6 +14,7 @@ const Map = struct {
 };
 
 const Enemy = struct {
+    id: u64,
     position: Vector2,
     mapPoint: u8,
     size: f32,
@@ -30,7 +31,7 @@ const Game = struct {
     frame: usize,
     choosingMap: bool,
     health: usize,
-    maps: std.ArrayList(Map),
+    maps: std.AutoHashMap([*:0]const u8, Map),
     enemies: std.ArrayList(Enemy),
     turrets: std.ArrayList(Turret),
 };
@@ -61,61 +62,68 @@ pub fn StartGame() !void {
 
     try monkeyMeadow.turretCords.append(Vector2.init(200, 230));
 
-    try game.maps.append(monkeyMeadow);
+    try game.maps.put(monkeyMeadow.name, monkeyMeadow);
 
-    const turret1 = Turret{
-        .range = 150,
-        .enemies = try std.BoundedArray(Enemy, 100).init(0),
-    };
-
-    try game.turrets.append(turret1);
+    // const turret1 = Turret{
+    //     .range = 150,
+    //     .enemies = try std.BoundedArray(Enemy, 100).init(0),
+    // };
+    //
+    // try game.turrets.append(turret1);
 }
 
 pub fn Update() !void {
     game.frame += 1;
 
-    if (game.frame % 180 == 0) {
-        const enemy = Enemy{
-            .position = Vector2.init(0, 300),
-            .mapPoint = 0,
-            .size = 8,
-            .speed = 1,
-            .isAlive = true,
-        };
-        try game.enemies.append(enemy);
-    }
+    if (game.choosingMap) {}
 
-    var turretNmbr: u8 = 0;
-    for (game.enemies.items) |*enemyPtr| {
-        if (enemyPtr.isAlive) {
-            for (game.maps.items) |map| {
-                for (game.turrets.items) |*turretPtr| {
-                    if (rl.checkCollisionPointCircle(enemyPtr.position, map.turretCords.get(0), turretPtr.range)) {
-                        //try turretPtr.enemies.append(enemyPtr.*);
-                        std.log.info("Enemy in range", .{});
-                    }
-
-                    const mapPoint = map.cords.get(enemyPtr.mapPoint);
-                    const lastPoint = map.cords.get(map.positions);
-
-                    if (enemyPtr.position.equals(mapPoint) == 1 and enemyPtr.mapPoint < map.positions) {
-                        enemyPtr.mapPoint += 1;
-                    }
-
-                    if (enemyPtr.position.equals(lastPoint) == 1) {
-                        enemyPtr.isAlive = false;
-
-                        game.health -= 1;
-                    }
-                    enemyPtr.position = enemyPtr.position.moveTowards(mapPoint, 1);
-
-                    if (game.turrets.items.len < turretNmbr) {
-                        turretNmbr += 1;
-                    }
-                }
-            }
-        }
-    }
+    // if (game.frame % 180 == 0) {
+    //     const enemy = Enemy{
+    //         .id = game.frame / 180,
+    //         .position = Vector2.init(0, 300),
+    //         .mapPoint = 0,
+    //         .size = 8,
+    //         .speed = 1,
+    //         .isAlive = true,
+    //     };
+    //     try game.enemies.append(enemy);
+    // }
+    //
+    // var turretNmbr: u8 = 0;
+    // for (game.enemies.items) |*enemyPtr| {
+    //     if (enemyPtr.isAlive) {
+    //         for (game.maps.items) |map| {
+    //             for (game.turrets.items) |*turretPtr| {
+    //                 //Check for collision with turrets range
+    //                 if (rl.checkCollisionPointCircle(enemyPtr.position, map.turretCords.get(0), turretPtr.range)) {
+    //                     std.log.info("Enemy in range {}", .{enemyPtr.id});
+    //                 }
+    //
+    //                 const mapPoint = map.cords.get(enemyPtr.mapPoint);
+    //                 const lastPoint = map.cords.get(map.positions);
+    //
+    //                 //Change point to where enemy moves to
+    //                 if (enemyPtr.position.equals(mapPoint) == 1 and enemyPtr.mapPoint < map.positions) {
+    //                     enemyPtr.mapPoint += 1;
+    //                 }
+    //
+    //                 //Unalive enemy when it's at the end
+    //                 if (enemyPtr.position.equals(lastPoint) == 1) {
+    //                     enemyPtr.isAlive = false;
+    //
+    //                     game.health -= 1;
+    //                 }
+    //
+    //                 //Move enemy
+    //                 enemyPtr.position = enemyPtr.position.moveTowards(mapPoint, 1);
+    //
+    //                 if (game.turrets.items.len < turretNmbr) {
+    //                     turretNmbr += 1;
+    //                 }
+    //             }
+    //         }
+    //     }
+    // }
 }
 
 pub fn Draw() !void {
@@ -125,29 +133,37 @@ pub fn Draw() !void {
 
     rl.clearBackground(rl.Color.black);
 
-    //Drawing map
-    for (game.maps.items) |map| {
-        rl.drawLineStrip(map.cords.slice(), rl.Color.pink);
-    }
+    if (game.choosingMap) {
+        var mapsIterator = game.maps.iterator();
 
-    //Draw enemies
-    for (game.enemies.items) |enemy| {
-        if (enemy.isAlive) {
-            rl.drawPoly(enemy.position, 8, enemy.size, 0, rl.Color.red);
+        while (mapsIterator.next()) |map| {
+            rl.drawText(map.value_ptr.name, 0, 0, 20, rl.Color.white);
         }
     }
 
+    //Drawing map
+    // for (game.maps.items) |map| {
+    //     rl.drawLineStrip(map.cords.slice(), rl.Color.pink);
+    // }
+
+    //Draw enemies
+    // for (game.enemies.items) |enemy| {
+    //     if (enemy.isAlive) {
+    //         rl.drawPoly(enemy.position, 8, enemy.size, 0, rl.Color.red);
+    //     }
+    // }
+
     //for(game.turrets.items) |turret| {
-    var turretNmbr: u8 = 0;
-    for (game.maps.items) |map| {
-        rl.drawPoly(map.turretCords.get(turretNmbr), 4, 8, 0, rl.Color.blue);
-        rl.drawCircleLinesV(map.turretCords.get(turretNmbr), 150, rl.Color.alpha(rl.Color.gray, 0.7));
-        turretNmbr += 1;
-    }
+    // var turretNmbr: u8 = 0;
+    // for (game.maps.items) |map| {
+    //     rl.drawPoly(map.turretCords.get(turretNmbr), 4, 8, 0, rl.Color.blue);
+    //     rl.drawCircleLinesV(map.turretCords.get(turretNmbr), 150, rl.Color.alpha(rl.Color.gray, 0.7));
+    //     turretNmbr += 1;
+    // }
     //}
 
     //Drawing health
-    rl.drawText(rl.textFormat("Health: %01i", .{game.health}), 10, 10, 15, rl.Color.white);
+    //rl.drawText(rl.textFormat("Health: %01i", .{game.health}), 10, 10, 15, rl.Color.white);
 }
 
 pub fn main() !void {
@@ -159,7 +175,7 @@ pub fn main() !void {
         .frame = 0,
         .choosingMap = true,
         .health = 100,
-        .maps = std.ArrayList(Map).init(allocator),
+        .maps = std.AutoHashMap([*:0]const u8, Map).init(allocator),
         .enemies = std.ArrayList(Enemy).init(allocator),
         .turrets = std.ArrayList(Turret).init(allocator),
     };
