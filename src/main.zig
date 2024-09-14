@@ -48,25 +48,12 @@ pub fn StartGame() !void {
     rl.initWindow(screenWidth, screenHeight, "Ziggers");
     rl.setTargetFPS(60);
 
+    //
+    // Monkey Meadows
+    //
     var monkeyMeadow = Map{
         .id = 0,
         .name = "Monkey Meadow",
-        .positions = 5,
-        .cords = try std.BoundedArray(Vector2, 100).init(0),
-        .turretCords = try std.BoundedArray(Vector2, 10).init(0),
-    };
-
-    const townCenter = Map{
-        .id = 1,
-        .name = "Town Center",
-        .positions = 5,
-        .cords = try std.BoundedArray(Vector2, 100).init(0),
-        .turretCords = try std.BoundedArray(Vector2, 10).init(0),
-    };
-
-    const logs = Map{
-        .id = 2,
-        .name = "Logs",
         .positions = 5,
         .cords = try std.BoundedArray(Vector2, 100).init(0),
         .turretCords = try std.BoundedArray(Vector2, 10).init(0),
@@ -80,6 +67,28 @@ pub fn StartGame() !void {
     try monkeyMeadow.cords.append(Vector2.init(1280, 150));
 
     try monkeyMeadow.turretCords.append(Vector2.init(200, 230));
+
+    //
+    // Town Center
+    //
+    const townCenter = Map{
+        .id = 1,
+        .name = "Town Center",
+        .positions = 5,
+        .cords = try std.BoundedArray(Vector2, 100).init(0),
+        .turretCords = try std.BoundedArray(Vector2, 10).init(0),
+    };
+
+    //
+    // Logs
+    //
+    const logs = Map{
+        .id = 2,
+        .name = "Logs",
+        .positions = 5,
+        .cords = try std.BoundedArray(Vector2, 100).init(0),
+        .turretCords = try std.BoundedArray(Vector2, 10).init(0),
+    };
 
     try game.maps.put(monkeyMeadow.id, monkeyMeadow);
     try game.maps.put(townCenter.id, townCenter);
@@ -106,8 +115,11 @@ pub fn Update() !void {
         if (rl.isKeyPressed(rl.KeyboardKey.key_down)) {
             selectorHeight += 25;
         }
+
+        //Choose map
         if (rl.isKeyPressed(rl.KeyboardKey.key_enter)) {
             game.choosenMap = @divFloor(selectorHeight, 25);
+            game.choosingMap = false;
         }
 
         //Handle selector out of maps count
@@ -188,10 +200,11 @@ pub fn Draw() !void {
         }
     }
 
-    //Drawing map
-    // for (game.maps.items) |map| {
-    //     rl.drawLineStrip(map.cords.slice(), rl.Color.pink);
-    // }
+    if (!game.choosingMap) {
+        //Drawing map
+        const currentMap = game.maps.get(@intCast(game.choosenMap));
+        rl.drawLineStrip(currentMap.?.cords.slice(), rl.Color.green);
+    }
 
     //Draw enemies
     // for (game.enemies.items) |enemy| {
