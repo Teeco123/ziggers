@@ -48,9 +48,6 @@ pub fn StartGame() !void {
     rl.initWindow(screenWidth, screenHeight, "Ziggers");
     rl.setTargetFPS(60);
 
-    //
-    // Monkey Meadows
-    //
     var monkeyMeadow = Map{
         .id = 0,
         .name = "Monkey Meadow",
@@ -68,9 +65,6 @@ pub fn StartGame() !void {
 
     try monkeyMeadow.turretCords.append(Vector2.init(200, 230));
 
-    //
-    // Town Center
-    //
     const townCenter = Map{
         .id = 1,
         .name = "Town Center",
@@ -79,9 +73,6 @@ pub fn StartGame() !void {
         .turretCords = try std.BoundedArray(Vector2, 10).init(0),
     };
 
-    //
-    // Logs
-    //
     const logs = Map{
         .id = 2,
         .name = "Logs",
