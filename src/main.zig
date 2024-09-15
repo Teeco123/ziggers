@@ -44,6 +44,7 @@ pub fn StartGame() !void {
     rl.setTargetFPS(60);
 
     try game.maps.put(maps.map1.id, maps.map1);
+    try game.maps.put(maps.map2.id, maps.map2);
 
     // const turret1 = Turret{
     //     .range = 150,

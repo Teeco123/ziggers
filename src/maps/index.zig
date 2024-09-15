@@ -12,3 +12,4 @@ pub const Map = struct {
 };
 
 pub const map1 = @import("map1.zig").addMap();
+pub const map2 = @import("map2.zig").addMap();
