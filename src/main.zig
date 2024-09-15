@@ -2,20 +2,14 @@ const std = @import("std");
 const rl = @import("raylib");
 
 const Map = @import("maps/index.zig").Map;
+const Enemy = @import("enemies/index.zig").Enemy;
+
 const maps = @import("maps/index.zig");
+const enemies = @import("enemies/index.zig");
 
 const Vector2 = rl.Vector2;
 const math = std.math;
 const mem = std.mem;
-
-const Enemy = struct {
-    id: u64,
-    position: Vector2,
-    mapPoint: u8,
-    size: f32,
-    speed: f32,
-    isAlive: bool,
-};
 
 const Turret = struct {
     range: f32,
@@ -32,7 +26,7 @@ const Game = struct {
     turrets: std.ArrayList(Turret),
 };
 
-var game: Game = undefined;
+pub var game: Game = undefined;
 
 const screenWidth = 1280;
 const screenHeight = 720;
@@ -84,14 +78,6 @@ pub fn Update() !void {
     }
 
     // if (game.frame % 180 == 0) {
-    //     const enemy = Enemy{
-    //         .id = game.frame / 180,
-    //         .position = Vector2.init(0, 300),
-    //         .mapPoint = 0,
-    //         .size = 8,
-    //         .speed = 1,
-    //         .isAlive = true,
-    //     };
     //     try game.enemies.append(enemy);
     // }
     //
