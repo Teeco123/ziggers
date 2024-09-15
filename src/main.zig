@@ -156,6 +156,9 @@ pub fn Draw() !void {
         //Drawing map
         const currentMap = game.maps.get(@intCast(game.choosenMap));
         rl.drawLineStrip(currentMap.?.cords.slice(), rl.Color.green);
+
+        //Drawing health
+        rl.drawText(rl.textFormat("Health: %01i", .{game.health}), 10, 10, 15, rl.Color.white);
     }
 
     //Draw enemies
@@ -174,8 +177,6 @@ pub fn Draw() !void {
     // }
     //}
 
-    //Drawing health
-    //rl.drawText(rl.textFormat("Health: %01i", .{game.health}), 10, 10, 15, rl.Color.white);
 }
 
 pub fn main() !void {
