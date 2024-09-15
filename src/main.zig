@@ -1,17 +1,12 @@
 const std = @import("std");
 const rl = @import("raylib");
 
+const Map = @import("maps/index.zig").Map;
+const maps = @import("maps/index.zig");
+
 const Vector2 = rl.Vector2;
 const math = std.math;
 const mem = std.mem;
-
-const Map = struct {
-    id: usize,
-    name: [*:0]const u8,
-    positions: u8,
-    cords: std.BoundedArray(Vector2, 100),
-    turretCords: std.BoundedArray(Vector2, 10),
-};
 
 const Enemy = struct {
     id: u64,
@@ -48,42 +43,7 @@ pub fn StartGame() !void {
     rl.initWindow(screenWidth, screenHeight, "Ziggers");
     rl.setTargetFPS(60);
 
-    var monkeyMeadow = Map{
-        .id = 0,
-        .name = "Monkey Meadow",
-        .positions = 5,
-        .cords = try std.BoundedArray(Vector2, 100).init(0),
-        .turretCords = try std.BoundedArray(Vector2, 10).init(0),
-    };
-
-    try monkeyMeadow.cords.append(Vector2.init(0, 300));
-    try monkeyMeadow.cords.append(Vector2.init(400, 300));
-    try monkeyMeadow.cords.append(Vector2.init(400, 500));
-    try monkeyMeadow.cords.append(Vector2.init(800, 500));
-    try monkeyMeadow.cords.append(Vector2.init(800, 150));
-    try monkeyMeadow.cords.append(Vector2.init(1280, 150));
-
-    try monkeyMeadow.turretCords.append(Vector2.init(200, 230));
-
-    const townCenter = Map{
-        .id = 1,
-        .name = "Town Center",
-        .positions = 5,
-        .cords = try std.BoundedArray(Vector2, 100).init(0),
-        .turretCords = try std.BoundedArray(Vector2, 10).init(0),
-    };
-
-    const logs = Map{
-        .id = 2,
-        .name = "Logs",
-        .positions = 5,
-        .cords = try std.BoundedArray(Vector2, 100).init(0),
-        .turretCords = try std.BoundedArray(Vector2, 10).init(0),
-    };
-
-    try game.maps.put(monkeyMeadow.id, monkeyMeadow);
-    try game.maps.put(townCenter.id, townCenter);
-    try game.maps.put(logs.id, logs);
+    try game.maps.put(maps.map1.id, maps.map1);
 
     // const turret1 = Turret{
     //     .range = 150,
