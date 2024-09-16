@@ -3,9 +3,11 @@ const rl = @import("raylib");
 
 const Map = @import("maps/index.zig").Map;
 const Enemy = @import("enemies/index.zig").Enemy;
+const Round = @import("rounds/index.zig").Round;
 
 const maps = @import("maps/index.zig");
 const enemies = @import("enemies/index.zig");
+const rounds = @import("rounds/index.zig");
 
 const Vector2 = rl.Vector2;
 const math = std.math;
