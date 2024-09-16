@@ -22,9 +22,11 @@ const Game = struct {
     frame: usize,
     choosingMap: bool,
     choosenMap: i32,
+    currentRound: usize,
     health: usize,
     maps: std.AutoArrayHashMap(usize, Map),
     enemies: std.ArrayList(Enemy),
+    rounds: std.AutoArrayHashMap(usize, Round),
     turrets: std.ArrayList(Turret),
 };
 
@@ -42,6 +44,7 @@ pub fn StartGame() !void {
     try game.maps.put(maps.map1.id, maps.map1);
     try game.maps.put(maps.map2.id, maps.map2);
 
+    std.log.info("{any}", .{rounds.rounds});
     // const turret1 = Turret{
     //     .range = 150,
     //     .enemies = try std.BoundedArray(Enemy, 100).init(0),
@@ -176,14 +179,17 @@ pub fn main() !void {
         .frame = 0,
         .choosingMap = true,
         .choosenMap = 0,
+        .currentRound = 0,
         .health = 100,
         .maps = std.AutoArrayHashMap(usize, Map).init(allocator),
         .enemies = std.ArrayList(Enemy).init(allocator),
+        .rounds = std.AutoArrayHashMap(usize, Round).init(allocator),
         .turrets = std.ArrayList(Turret).init(allocator),
     };
 
     defer game.maps.deinit();
     defer game.enemies.deinit();
+    defer game.rounds.deinit();
     defer game.turrets.deinit();
 
     try StartGame();

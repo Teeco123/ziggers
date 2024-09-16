@@ -5,4 +5,6 @@ pub const Round = struct {
     enemies: std.BoundedArray(Enemy, 100),
 };
 
-pub const round1 = @import("round1.zig").addRound();
+const round1 = @import("round1.zig").addRound();
+
+pub const rounds = [_]Round{round1};
