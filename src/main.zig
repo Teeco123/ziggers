@@ -44,7 +44,11 @@ pub fn StartGame() !void {
     try game.maps.put(maps.map1.id, maps.map1);
     try game.maps.put(maps.map2.id, maps.map2);
 
-    std.log.info("{any}", .{rounds.rounds});
+    var i: usize = 0;
+    while (i < rounds.rounds.len) : (i += 1) {
+        try game.rounds.put(i, rounds.rounds[i]);
+    }
+
     // const turret1 = Turret{
     //     .range = 150,
     //     .enemies = try std.BoundedArray(Enemy, 100).init(0),
