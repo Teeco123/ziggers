@@ -21,7 +21,7 @@ const Turret = struct {
 const Game = struct {
     frame: usize,
     choosingMap: bool,
-    choosenMap: i32,
+    choosenMap: Map,
     currentRound: usize,
     health: usize,
     maps: std.AutoArrayHashMap(usize, Map),
@@ -74,7 +74,7 @@ pub fn Update() !void {
 
         //Choose map
         if (rl.isKeyPressed(rl.KeyboardKey.key_enter)) {
-            game.choosenMap = @divFloor(selectorHeight, 25);
+            game.choosenMap = game.maps.get(@intCast(@divFloor(selectorHeight, 25))).?;
             game.choosingMap = false;
         }
 
@@ -150,8 +150,7 @@ pub fn Draw() !void {
 
     if (!game.choosingMap) {
         //Drawing map
-        const currentMap = game.maps.get(@intCast(game.choosenMap));
-        rl.drawLineStrip(currentMap.?.cords.slice(), rl.Color.green);
+        rl.drawLineStrip(game.choosenMap.cords.slice(), rl.Color.green);
 
         //Drawing health
         rl.drawText(rl.textFormat("Health: %01i", .{game.health}), 10, 10, 15, rl.Color.white);
@@ -186,7 +185,7 @@ pub fn main() !void {
     game = .{
         .frame = 0,
         .choosingMap = true,
-        .choosenMap = 0,
+        .choosenMap = undefined,
         .currentRound = 0,
         .health = 100,
         .maps = std.AutoArrayHashMap(usize, Map).init(allocator),
