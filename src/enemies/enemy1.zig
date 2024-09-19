@@ -10,7 +10,7 @@ pub fn addEnemy() Enemy {
         .mapPoint = 0,
         .size = 8,
         .speed = 1,
-        .isAlive = true,
+        .isAlive = false,
     };
     return enemy1;
 }
