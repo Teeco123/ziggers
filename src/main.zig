@@ -87,45 +87,31 @@ pub fn Update() !void {
         }
     }
 
-    // if (game.frame % 180 == 0) {
-    //     try game.enemies.append(enemy);
-    // }
-    //
-    // var turretNmbr: u8 = 0;
-    // for (game.enemies.items) |*enemyPtr| {
-    //     if (enemyPtr.isAlive) {
-    //         for (game.maps.items) |map| {
-    //             for (game.turrets.items) |*turretPtr| {
-    //                 //Check for collision with turrets range
-    //                 if (rl.checkCollisionPointCircle(enemyPtr.position, map.turretCords.get(0), turretPtr.range)) {
-    //                     std.log.info("Enemy in range {}", .{enemyPtr.id});
-    //                 }
-    //
-    //                 const mapPoint = map.cords.get(enemyPtr.mapPoint);
-    //                 const lastPoint = map.cords.get(map.positions);
-    //
-    //                 //Change point to where enemy moves to
-    //                 if (enemyPtr.position.equals(mapPoint) == 1 and enemyPtr.mapPoint < map.positions) {
-    //                     enemyPtr.mapPoint += 1;
-    //                 }
-    //
-    //                 //Unalive enemy when it's at the end
-    //                 if (enemyPtr.position.equals(lastPoint) == 1) {
-    //                     enemyPtr.isAlive = false;
-    //
-    //                     game.health -= 1;
-    //                 }
-    //
-    //                 //Move enemy
-    //                 enemyPtr.position = enemyPtr.position.moveTowards(mapPoint, 1);
-    //
-    //                 if (game.turrets.items.len < turretNmbr) {
-    //                     turretNmbr += 1;
-    //                 }
-    //             }
-    //         }
-    //     }
-    // }
+    if (!game.choosingMap) {
+        const currentRnd = game.rounds.getPtr(game.currentRound);
+        const enemySlice = currentRnd.?.enemies.slice();
+
+        for (enemySlice) |*enemy| {
+            const mapPoint = game.choosenMap.cords.get(enemy.mapPoint);
+            const lastPoint = game.choosenMap.cords.get(game.choosenMap.positions);
+
+            if (enemy.isAlive) {
+                //Handle enemy at end of the point
+                if (enemy.position.equals(mapPoint) == 1 and enemy.mapPoint < game.choosenMap.positions) {
+                    enemy.mapPoint += 1;
+                }
+
+                //Handle enemy at end of the map
+                if (enemy.position.equals(lastPoint) == 1) {
+                    enemy.isAlive = false;
+                    game.health -= 1;
+                }
+
+                //Move enemy
+                enemy.position = enemy.position.moveTowards(mapPoint, 1);
+            }
+        }
+    }
 }
 
 pub fn Draw() !void {
@@ -157,14 +143,17 @@ pub fn Draw() !void {
 
         //Drawing current round
         rl.drawText(rl.textFormat("Round: %01i", .{game.currentRound}), screenWidth - 70, 10, 15, rl.Color.white);
-    }
 
-    //Draw enemies
-    // for (game.enemies.items) |enemy| {
-    //     if (enemy.isAlive) {
-    //         rl.drawPoly(enemy.position, 8, enemy.size, 0, rl.Color.red);
-    //     }
-    // }
+        //Drawing enemies
+        const currentRnd = game.rounds.getPtr(game.currentRound);
+        const enemySlice = currentRnd.?.enemies.slice();
+
+        for (enemySlice) |enemy| {
+            if (enemy.isAlive) {
+                rl.drawPoly(enemy.position, 8, enemy.size, 0, rl.Color.red);
+            }
+        }
+    }
 
     //for(game.turrets.items) |turret| {
     // var turretNmbr: u8 = 0;
