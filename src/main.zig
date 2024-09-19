@@ -23,6 +23,7 @@ const Game = struct {
     choosingMap: bool,
     choosenMap: Map,
     currentRound: usize,
+    enemyToSpawn: usize,
     health: usize,
     maps: std.AutoArrayHashMap(usize, Map),
     enemies: std.ArrayList(Enemy),
@@ -90,6 +91,11 @@ pub fn Update() !void {
     if (!game.choosingMap) {
         const currentRnd = game.rounds.getPtr(game.currentRound);
         const enemySlice = currentRnd.?.enemies.slice();
+
+        if (game.frame % 180 == 0 and game.enemyToSpawn < enemySlice.len) {
+            enemySlice[game.enemyToSpawn].isAlive = true;
+            game.enemyToSpawn += 1;
+        }
 
         for (enemySlice) |*enemy| {
             const mapPoint = game.choosenMap.cords.get(enemy.mapPoint);
@@ -176,6 +182,7 @@ pub fn main() !void {
         .choosingMap = true,
         .choosenMap = undefined,
         .currentRound = 0,
+        .enemyToSpawn = 0,
         .health = 100,
         .maps = std.AutoArrayHashMap(usize, Map).init(allocator),
         .enemies = std.ArrayList(Enemy).init(allocator),
