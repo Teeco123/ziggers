@@ -165,6 +165,11 @@ pub fn Draw() !void {
         //Drawing map
         rl.drawLineStrip(game.choosenMap.cords.slice(), rl.Color.green);
 
+        //Drawing Turret spots
+        for (game.choosenMap.turretCords.slice()) |cords| {
+            rl.drawPolyLines(cords, 4, 25, 45, rl.Color.white);
+        }
+
         //Drawing health
         rl.drawText(rl.textFormat("Health: %01i", .{game.health}), 10, 10, 15, rl.Color.white);
 
