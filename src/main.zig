@@ -38,6 +38,15 @@ const screenHeight = 720;
 
 var selectorHeight: i32 = 0;
 
+fn CheckNextRound(slice: anytype) bool {
+    for (slice) |i| {
+        if (i.isAlive) {
+            return false;
+        }
+    }
+    return true;
+}
+
 pub fn StartGame() !void {
     rl.initWindow(screenWidth, screenHeight, "Ziggers");
     rl.setTargetFPS(60);
@@ -95,6 +104,11 @@ pub fn Update() !void {
         if (game.frame % 180 == 0 and game.enemyToSpawn < enemySlice.len) {
             enemySlice[game.enemyToSpawn].isAlive = true;
             game.enemyToSpawn += 1;
+        }
+
+        //Check if all enemies are dead
+        if (CheckNextRound(enemySlice) and game.frame > 200) {
+            std.log.info("das", .{});
         }
 
         for (enemySlice) |*enemy| {
@@ -183,6 +197,7 @@ pub fn main() !void {
         .choosenMap = undefined,
         .currentRound = 0,
         .enemyToSpawn = 0,
+        .nextRoundTimer = 0,
         .health = 100,
         .maps = std.AutoArrayHashMap(usize, Map).init(allocator),
         .enemies = std.ArrayList(Enemy).init(allocator),
