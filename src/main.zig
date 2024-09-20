@@ -24,6 +24,7 @@ const Game = struct {
     choosenMap: Map,
     currentRound: usize,
     enemyToSpawn: usize,
+    nextRoundTimer: usize,
     health: usize,
     maps: std.AutoArrayHashMap(usize, Map),
     enemies: std.ArrayList(Enemy),
@@ -108,7 +109,13 @@ pub fn Update() !void {
 
         //Check if all enemies are dead
         if (CheckNextRound(enemySlice) and game.frame > 200) {
-            std.log.info("das", .{});
+            game.nextRoundTimer += 1;
+
+            if (game.nextRoundTimer % 600 == 0) {
+                game.enemyToSpawn = 0;
+                game.nextRoundTimer = 0;
+                game.currentRound += 1;
+            }
         }
 
         for (enemySlice) |*enemy| {
