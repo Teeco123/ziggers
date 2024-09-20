@@ -10,6 +10,12 @@ pub fn addRound() Round {
     };
 
     try round1.enemies.append(enemies.enemy1);
+    try round1.enemies.append(enemies.enemy1);
+    try round1.enemies.append(enemies.enemy1);
+    try round1.enemies.append(enemies.enemy1);
+    try round1.enemies.append(enemies.enemy1);
+    try round1.enemies.append(enemies.enemy1);
+    try round1.enemies.append(enemies.enemy1);
 
     return round1;
 }
