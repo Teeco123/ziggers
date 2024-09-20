@@ -6,5 +6,6 @@ pub const Round = struct {
 };
 
 const round1 = @import("round1.zig").addRound();
+const round2 = @import("round2.zig").addRound();
 
-pub const rounds = [_]Round{round1};
+pub const rounds = [_]Round{ round1, round2 };
