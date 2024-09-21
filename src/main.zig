@@ -20,6 +20,7 @@ const Turret = struct {
 
 const Game = struct {
     frame: usize,
+    mousePos: Vector2,
     choosingMap: bool,
     choosenMap: Map,
     currentRound: usize,
@@ -72,6 +73,7 @@ pub fn StartGame() !void {
 pub fn Update() !void {
     game.frame += 1;
 
+    game.mousePos = rl.getMousePosition();
     if (game.choosingMap) {
         const nmbrOfMaps: i32 = @intCast(game.maps.count());
 
@@ -138,6 +140,13 @@ pub fn Update() !void {
                 enemy.position = enemy.position.moveTowards(mapPoint, 1);
             }
         }
+
+        //Ch
+        for (game.choosenMap.turretCords.slice()) |cords| {
+            if (rl.checkCollisionPointCircle(game.mousePos, cords, 25) and rl.isMouseButtonPressed(rl.MouseButton.mouse_button_left)) {
+                std.log.info("huj", .{});
+            }
+        }
     }
 }
 
@@ -167,7 +176,7 @@ pub fn Draw() !void {
 
         //Drawing Turret spots
         for (game.choosenMap.turretCords.slice()) |cords| {
-            rl.drawPolyLines(cords, 4, 25, 45, rl.Color.white);
+            rl.drawCircleLinesV(cords, 25, rl.Color.white);
         }
 
         //Drawing health
@@ -205,6 +214,7 @@ pub fn main() !void {
 
     game = .{
         .frame = 0,
+        .mousePos = Vector2.init(0, 0),
         .choosingMap = true,
         .choosenMap = undefined,
         .currentRound = 0,
