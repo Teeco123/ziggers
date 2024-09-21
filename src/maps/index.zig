@@ -8,7 +8,12 @@ pub const Map = struct {
     name: [*:0]const u8,
     positions: u8,
     cords: std.BoundedArray(Vector2, 100),
-    turretCords: std.BoundedArray(Vector2, 10),
+    turretSpots: std.BoundedArray(TurretSpot, 10),
+};
+
+pub const TurretSpot = struct {
+    position: Vector2,
+    menu: bool,
 };
 
 pub const map1 = @import("map1.zig").addMap();

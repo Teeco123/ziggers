@@ -141,9 +141,9 @@ pub fn Update() !void {
             }
         }
 
-        //Ch
-        for (game.choosenMap.turretCords.slice()) |cords| {
-            if (rl.checkCollisionPointCircle(game.mousePos, cords, 25) and rl.isMouseButtonPressed(rl.MouseButton.mouse_button_left)) {
+        //Check for button click for every turret spot
+        for (game.choosenMap.turretSpots.slice()) |spot| {
+            if (rl.checkCollisionPointCircle(game.mousePos, spot.position, 25) and rl.isMouseButtonPressed(rl.MouseButton.mouse_button_left)) {
                 std.log.info("huj", .{});
             }
         }
@@ -175,8 +175,8 @@ pub fn Draw() !void {
         rl.drawLineStrip(game.choosenMap.cords.slice(), rl.Color.green);
 
         //Drawing Turret spots
-        for (game.choosenMap.turretCords.slice()) |cords| {
-            rl.drawCircleLinesV(cords, 25, rl.Color.white);
+        for (game.choosenMap.turretSpots.slice()) |spot| {
+            rl.drawCircleLinesV(spot.position, 25, rl.Color.white);
         }
 
         //Drawing health
