@@ -1,5 +1,6 @@
 const std = @import("std");
 const rl = @import("raylib");
+const rg = @import("raygui");
 
 const Map = @import("maps/index.zig").Map;
 const Enemy = @import("enemies/index.zig").Enemy;
@@ -199,7 +200,13 @@ pub fn Draw() !void {
 
         for (game.choosenMap.turretSpots.slice()) |spot| {
             if (spot.menu) {
-                rl.drawText("!", @intFromFloat(spot.position.x), @intFromFloat(spot.position.y - 60), 25, rl.Color.white);
+                const rec1 = rl.Rectangle.init(spot.position.x - 80, spot.position.y - 60, 50, 20);
+                const rec2 = rl.Rectangle.init(spot.position.x - 25, spot.position.y - 60, 50, 20);
+                const rec3 = rl.Rectangle.init(spot.position.x + 30, spot.position.y - 60, 50, 20);
+
+                _ = rg.guiButton(rec1, "Tower1");
+                _ = rg.guiButton(rec2, "Tower2");
+                _ = rg.guiButton(rec3, "Tower3");
             }
         }
     }

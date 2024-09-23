@@ -10,6 +10,7 @@ pub fn build(b: *std.Build) !void {
     });
 
     const raylib = raylib_dep.module("raylib"); // main raylib module
+    const raygui = raylib_dep.module("raygui"); // raygui module
     const raylib_artifact = raylib_dep.artifact("raylib"); // raylib C library
 
     const exe = b.addExecutable(.{
@@ -20,6 +21,7 @@ pub fn build(b: *std.Build) !void {
     });
 
     exe.linkLibrary(raylib_artifact);
+    exe.root_module.addImport("raygui", raygui);
     exe.root_module.addImport("raylib", raylib);
 
     const run_cmd = b.addRunArtifact(exe);
