@@ -142,9 +142,11 @@ pub fn Update() !void {
         }
 
         //Check for button click for every turret spot
-        for (game.choosenMap.turretSpots.slice()) |spot| {
-            if (rl.checkCollisionPointCircle(game.mousePos, spot.position, 25) and rl.isMouseButtonPressed(rl.MouseButton.mouse_button_left)) {
-                std.log.info("huj", .{});
+        for (game.choosenMap.turretSpots.slice()) |*spot| {
+            if (rl.checkCollisionPointCircle(game.mousePos, spot.position, 25) and rl.isMouseButtonPressed(rl.MouseButton.mouse_button_left) and !spot.menu) {
+                spot.menu = true;
+            } else if (!rl.checkCollisionPointCircle(game.mousePos, spot.position, 25) and rl.isMouseButtonPressed(rl.MouseButton.mouse_button_left) and spot.menu) {
+                spot.menu = false;
             }
         }
     }
@@ -192,6 +194,12 @@ pub fn Draw() !void {
         for (enemySlice) |enemy| {
             if (enemy.isAlive) {
                 rl.drawPoly(enemy.position, 8, enemy.size, 0, rl.Color.red);
+            }
+        }
+
+        for (game.choosenMap.turretSpots.slice()) |spot| {
+            if (spot.menu) {
+                rl.drawText("!", @intFromFloat(spot.position.x), @intFromFloat(spot.position.y - 60), 25, rl.Color.white);
             }
         }
     }
