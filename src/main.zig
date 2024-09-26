@@ -21,6 +21,7 @@ const Turret = struct {
 
 const Game = struct {
     frame: usize,
+    gameTimer: usize,
     mousePos: Vector2,
     choosingMap: bool,
     choosenMap: Map,
@@ -40,6 +41,8 @@ const screenWidth = 1280;
 const screenHeight = 720;
 
 var selectorHeight: i32 = 0;
+
+var newRound = false;
 
 fn CheckNextRound(slice: anytype) bool {
     for (slice) |i| {
@@ -102,22 +105,33 @@ pub fn Update() !void {
     }
 
     if (!game.choosingMap) {
+        game.gameTimer += 1;
+
         const currentRnd = game.rounds.getPtr(game.currentRound);
         const enemySlice = currentRnd.?.enemies.slice();
 
-        if (game.frame % 180 == 0 and game.enemyToSpawn < enemySlice.len) {
+        if (game.gameTimer % 180 == 0 and game.enemyToSpawn < enemySlice.len) {
             enemySlice[game.enemyToSpawn].isAlive = true;
             game.enemyToSpawn += 1;
         }
 
+        //Fix to nextRoundTimer going above 600
+        if (newRound) {
+            enemySlice[0].isAlive = true;
+            game.gameTimer = 0;
+            newRound = false;
+        }
+
         //Check if all enemies are dead
-        if (CheckNextRound(enemySlice) and game.frame > 200) {
+        if (CheckNextRound(enemySlice) and game.gameTimer > 200) {
             game.nextRoundTimer += 1;
 
             if (game.nextRoundTimer % 600 == 0) {
-                game.enemyToSpawn = 0;
+                game.enemyToSpawn = 1;
                 game.nextRoundTimer = 0;
                 game.currentRound += 1;
+
+                newRound = true;
             }
         }
 
@@ -229,6 +243,7 @@ pub fn main() !void {
 
     game = .{
         .frame = 0,
+        .gameTimer = 0,
         .mousePos = Vector2.init(0, 0),
         .choosingMap = true,
         .choosenMap = undefined,
