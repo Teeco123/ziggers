@@ -53,27 +53,6 @@ fn CheckNextRound(slice: anytype) bool {
     return true;
 }
 
-pub fn StartGame() !void {
-    rl.initWindow(screenWidth, screenHeight, "Ziggers");
-    rl.setTargetFPS(60);
-
-    try game.maps.put(maps.map1.id, maps.map1);
-    try game.maps.put(maps.map2.id, maps.map2);
-
-    //Adding rounds to hashmap
-    var i: usize = 0;
-    while (i < rounds.rounds.len) : (i += 1) {
-        try game.rounds.put(i, rounds.rounds[i]);
-    }
-
-    // const turret1 = Turret{
-    //     .range = 150,
-    //     .enemies = try std.BoundedArray(Enemy, 100).init(0),
-    // };
-    //
-    // try game.turrets.append(turret1);
-}
-
 pub fn main() !void {
     var gpa = std.heap.GeneralPurposeAllocator(.{}){};
     const allocator = gpa.allocator();
@@ -100,7 +79,17 @@ pub fn main() !void {
     defer game.rounds.deinit();
     defer game.turrets.deinit();
 
-    try StartGame();
+    rl.initWindow(screenWidth, screenHeight, "Ziggers");
+    rl.setTargetFPS(60);
+
+    try game.maps.put(maps.map1.id, maps.map1);
+    try game.maps.put(maps.map2.id, maps.map2);
+
+    //Adding rounds to hashmap
+    var i: usize = 0;
+    while (i < rounds.rounds.len) : (i += 1) {
+        try game.rounds.put(i, rounds.rounds[i]);
+    }
 
     while (!rl.windowShouldClose()) {
         rl.beginDrawing();
