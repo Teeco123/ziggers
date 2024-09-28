@@ -75,9 +75,15 @@ pub fn StartGame() !void {
 }
 
 pub fn Update() !void {
-    game.frame += 1;
+    rl.beginDrawing();
 
+    defer rl.endDrawing();
+
+    rl.clearBackground(rl.Color.black);
+
+    game.frame += 1;
     game.mousePos = rl.getMousePosition();
+
     if (game.choosingMap) {
         const nmbrOfMaps: i32 = @intCast(game.maps.count());
 
@@ -101,6 +107,17 @@ pub fn Update() !void {
         }
         if (selectorHeight > (game.maps.count() - 1) * 25) {
             selectorHeight = 0;
+        }
+
+        //Drawing arrow selector
+        rl.drawText("<-", 200, selectorHeight, 25, rl.Color.white);
+
+        //Drawing all maps names
+        var mapsIterator = game.maps.iterator();
+        var height: i32 = 0;
+        while (mapsIterator.next()) |map| {
+            rl.drawText(map.value_ptr.name, 0, height, 20, rl.Color.white);
+            height += 25;
         }
     }
 
@@ -168,24 +185,7 @@ pub fn Update() !void {
 }
 
 pub fn Draw() !void {
-    rl.beginDrawing();
-
-    defer rl.endDrawing();
-
-    rl.clearBackground(rl.Color.black);
-
-    if (game.choosingMap) {
-        //Drawing arrow selector
-        rl.drawText("<-", 200, selectorHeight, 25, rl.Color.white);
-
-        //Drawing all maps names
-        var mapsIterator = game.maps.iterator();
-        var height: i32 = 0;
-        while (mapsIterator.next()) |map| {
-            rl.drawText(map.value_ptr.name, 0, height, 20, rl.Color.white);
-            height += 25;
-        }
-    }
+    if (game.choosingMap) {}
 
     if (!game.choosingMap) {
         //Drawing map
