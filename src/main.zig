@@ -213,6 +213,16 @@ pub fn main() !void {
                 } else if (!rl.checkCollisionPointCircle(game.mousePos, spot.position, 25) and rl.isMouseButtonPressed(rl.MouseButton.mouse_button_left) and spot.menu) {
                     spot.menu = false;
                 }
+
+                if (spot.menu) {
+                    const rec1 = rl.Rectangle.init(spot.position.x - 80, spot.position.y - 60, 50, 20);
+                    const rec2 = rl.Rectangle.init(spot.position.x - 25, spot.position.y - 60, 50, 20);
+                    const rec3 = rl.Rectangle.init(spot.position.x + 30, spot.position.y - 60, 50, 20);
+
+                    _ = rg.guiButton(rec1, "Tower1");
+                    _ = rg.guiButton(rec2, "Tower2");
+                    _ = rg.guiButton(rec3, "Tower3");
+                }
             }
         }
     }
